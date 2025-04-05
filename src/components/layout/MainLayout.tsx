@@ -14,11 +14,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const { user, loading } = useUser()
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="flex flex-col min-h-screen">
         <Header user={user} loading={loading} onMenuToggle={setMobileMenuOpen} />
-        <main className="py-10">
-          <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+        <main className="flex-grow">
+          {children}
         </main>
         <Footer />
       </div>
