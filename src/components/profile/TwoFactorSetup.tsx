@@ -14,15 +14,11 @@ interface Message {
 export default function TwoFactorSetup() {
   const [step, setStep] = useState<'start' | 'qr' | 'verify'>('start')
   const [qrCode, setQrCode] = useState<string | null>(null)
-  const [secret, setSecret] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [factorId, setFactorId] = useState('')
-  const [verified, setVerified] = useState(false)
   const [message, setMessage] = useState<Message>({ type: 'success', text: '' })
-  const [setupComplete, setSetupComplete] = useState(false)
 
   const startSetup = async () => {
     setLoading(true)
@@ -35,8 +31,8 @@ export default function TwoFactorSetup() {
       })
 
       if (error) throw error
-      if (data?.qr) {
-        setQrCode(data.qr)
+      if (data?.totp?.qr_code) {
+        setQrCode(data.totp.qr_code)
       }
       setFactorId(data.id)
       setStep('qr')
@@ -63,9 +59,8 @@ export default function TwoFactorSetup() {
       })
       if (verifyError) throw verifyError
 
-      setVerified(true)
-      setSuccess('Two-factor authentication enabled successfully!')
       setMessage({ type: 'success', text: 'Two-factor authentication enabled successfully!' })
+      setStep('verify')
     } catch (err) {
       const authError = err as AuthError
       setMessage({ type: 'error', text: authError.message || 'Failed to verify code. Please try again.' })
@@ -84,7 +79,6 @@ export default function TwoFactorSetup() {
       })
 
       if (error) throw error
-      setSetupComplete(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to verify 2FA setup')
     } finally {

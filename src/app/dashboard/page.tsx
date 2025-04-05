@@ -12,6 +12,11 @@ import {
 } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 
+interface DashboardData {
+  id: string;
+  [key: string]: any;
+}
+
 const stats = [
   {
     id: 1,
@@ -48,7 +53,7 @@ const stats = [
 ]
 
 export default function DashboardPage() {
-  const [data, setData] = useState(null)
+  const [data, setData] = useState<DashboardData[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 

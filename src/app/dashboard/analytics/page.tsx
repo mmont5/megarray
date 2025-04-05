@@ -3,8 +3,13 @@
 import { useState, useEffect } from 'react'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 
+interface AnalyticsData {
+  id: string;
+  [key: string]: any;
+}
+
 export default function AnalyticsPage() {
-  const [data, setData] = useState(null)
+  const [data, setData] = useState<AnalyticsData[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
