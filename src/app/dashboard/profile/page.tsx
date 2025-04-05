@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase/client'
+import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 import ProfileSettings from '@/components/profile/ProfileSettings'
 import TwoFactorSetup from '@/components/profile/TwoFactorSetup'
@@ -24,6 +24,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const getUser = async () => {
       try {
+        const supabase = getSupabaseBrowserClient()
         const { data: { user } } = await supabase.auth.getUser()
         setUser(user)
       } catch (error) {

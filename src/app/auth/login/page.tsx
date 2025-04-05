@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase/client'
+import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 
 const socialProviders = [
   {
@@ -82,6 +82,7 @@ function LoginPageContent() {
     setLoading(true)
 
     try {
+      const supabase = getSupabaseBrowserClient()
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
@@ -102,6 +103,7 @@ function LoginPageContent() {
 
   const handleSocialSignIn = async (provider: string) => {
     try {
+      const supabase = getSupabaseBrowserClient()
       const { error } = await supabase.auth.signInWithOAuth({
         provider: provider as any,
         options: {

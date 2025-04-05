@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic'
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase/client'
+import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 
 function VerifyPageContent() {
   const router = useRouter()
@@ -22,6 +22,7 @@ function VerifyPageContent() {
           throw new Error('Invalid verification link')
         }
 
+        const supabase = getSupabaseBrowserClient()
         const { error } = await supabase.auth.verifyOtp({
           token_hash: token,
           type: 'email',
