@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
+import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 
 interface ProfileSettingsProps {
   user: User
@@ -31,13 +31,15 @@ export default function ProfileSettings({ user }: ProfileSettingsProps) {
     bio: ''
   })
   const [message, setMessage] = useState<Message | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const updateProfile = async (event: React.FormEvent) => {
     event.preventDefault()
     setLoading(true)
-    setMessage(null)
+    setError(null)
 
     try {
+      const supabase = getSupabaseBrowserClient()
       const updates = {
         id: user.id,
         first_name: formData.firstName,
@@ -56,10 +58,7 @@ export default function ProfileSettings({ user }: ProfileSettingsProps) {
 
       setMessage({ type: 'success', text: 'Profile updated successfully!' })
     } catch (error) {
-      setMessage({
-        type: 'error',
-        text: error instanceof Error ? error.message : 'Error updating profile'
-      })
+      setError(error instanceof Error ? error.message : 'Error updating profile')
     } finally {
       setLoading(false)
     }
@@ -190,6 +189,31 @@ export default function ProfileSettings({ user }: ProfileSettingsProps) {
               <div className="ml-3">
                 <p className={`text-sm font-medium ${message.type === 'error' ? 'text-red-800' : 'text-green-800'}`}>
                   {message.text}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="mt-4 rounded-md bg-red-50 p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-red-800">
+                  {error}
                 </p>
               </div>
             </div>

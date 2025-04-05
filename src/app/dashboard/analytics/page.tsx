@@ -1,11 +1,32 @@
 'use client'
 
-import { useEffect } from 'react'
-import { supabase } from '@/lib/supabase/client'
+import { useState, useEffect } from 'react'
+import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 
 export default function AnalyticsPage() {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
-    // Add your analytics initialization code here
+    const fetchData = async () => {
+      try {
+        const supabase = getSupabaseBrowserClient()
+        const { data, error } = await supabase
+          .from('analytics')
+          .select('*')
+          .limit(10)
+
+        if (error) throw error
+        setData(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error fetching analytics data')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
   }, [])
 
   return (

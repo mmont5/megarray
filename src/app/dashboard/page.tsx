@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect } from 'react'
-import { supabase } from '@/lib/supabase/client'
+import { useState, useEffect } from 'react'
+import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import {
   ArrowDownIcon,
   ArrowUpIcon,
@@ -48,9 +48,38 @@ const stats = [
 ]
 
 export default function DashboardPage() {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
-    // Add your dashboard initialization code here
+    const fetchData = async () => {
+      try {
+        const supabase = getSupabaseBrowserClient()
+        const { data, error } = await supabase
+          .from('dashboard_data')
+          .select('*')
+          .limit(10)
+
+        if (error) throw error
+        setData(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error fetching dashboard data')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
   }, [])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
 
   return (
     <div className="py-10">

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
+import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import { QRCodeSVG } from 'qrcode.react'
 import type { AuthError } from '@supabase/supabase-js'
 
@@ -12,33 +13,35 @@ interface Message {
 
 export default function TwoFactorSetup() {
   const [step, setStep] = useState<'start' | 'qr' | 'verify'>('start')
-  const [qrCode, setQrCode] = useState('')
+  const [qrCode, setQrCode] = useState<string | null>(null)
   const [secret, setSecret] = useState('')
   const [verificationCode, setVerificationCode] = useState('')
-  const [error, setError] = useState('')
+  const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [factorId, setFactorId] = useState('')
   const [verified, setVerified] = useState(false)
   const [message, setMessage] = useState<Message>({ type: 'success', text: '' })
+  const [setupComplete, setSetupComplete] = useState(false)
 
   const startSetup = async () => {
     setLoading(true)
-    setError('')
+    setError(null)
 
     try {
+      const supabase = getSupabaseBrowserClient()
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: 'totp'
       })
-      if (error) throw error
 
-      setQrCode(data.totp.qr_code)
-      setSecret(data.totp.secret)
+      if (error) throw error
+      if (data?.qr) {
+        setQrCode(data.qr)
+      }
       setFactorId(data.id)
       setStep('qr')
     } catch (err) {
-      const authError = err as AuthError
-      setError(authError.message || 'Failed to start 2FA setup')
+      setError(err instanceof Error ? err.message : 'Failed to start 2FA setup')
     } finally {
       setLoading(false)
     }
@@ -46,6 +49,7 @@ export default function TwoFactorSetup() {
 
   const verifyOTP = async () => {
     try {
+      const supabase = getSupabaseBrowserClient()
       const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({
         factorId
       })
@@ -65,6 +69,26 @@ export default function TwoFactorSetup() {
     } catch (err) {
       const authError = err as AuthError
       setMessage({ type: 'error', text: authError.message || 'Failed to verify code. Please try again.' })
+    }
+  }
+
+  const verifySetup = async () => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const supabase = getSupabaseBrowserClient()
+      const { error } = await supabase.auth.mfa.challenge({
+        factorId: 'totp',
+        code: verificationCode
+      })
+
+      if (error) throw error
+      setSetupComplete(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to verify 2FA setup')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -96,7 +120,7 @@ export default function TwoFactorSetup() {
               1. Scan this QR code with your authenticator app (e.g., Google Authenticator, Authy)
             </p>
             <div className="inline-block p-4 bg-white border rounded-lg">
-              <QRCodeSVG value={qrCode} size={200} />
+              <QRCodeSVG value={qrCode || ''} size={200} />
             </div>
           </div>
 
