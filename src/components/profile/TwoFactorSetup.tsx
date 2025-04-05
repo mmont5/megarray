@@ -3,6 +3,12 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { QRCodeSVG } from 'qrcode.react'
+import type { AuthError } from '@supabase/supabase-js'
+
+interface Message {
+  type: 'success' | 'error'
+  text: string
+}
 
 export default function TwoFactorSetup() {
   const [step, setStep] = useState<'start' | 'qr' | 'verify'>('start')
@@ -14,7 +20,7 @@ export default function TwoFactorSetup() {
   const [loading, setLoading] = useState(false)
   const [factorId, setFactorId] = useState('')
   const [verified, setVerified] = useState(false)
-  const [message, setMessage] = useState({ type: 'success', text: '' })
+  const [message, setMessage] = useState<Message>({ type: 'success', text: '' })
 
   const startSetup = async () => {
     setLoading(true)
@@ -30,8 +36,9 @@ export default function TwoFactorSetup() {
       setSecret(data.totp.secret)
       setFactorId(data.id)
       setStep('qr')
-    } catch (err: any) {
-      setError(err.message || 'Failed to start 2FA setup')
+    } catch (err) {
+      const authError = err as AuthError
+      setError(authError.message || 'Failed to start 2FA setup')
     } finally {
       setLoading(false)
     }
@@ -39,22 +46,25 @@ export default function TwoFactorSetup() {
 
   const verifyOTP = async () => {
     try {
-      const { data: challenge } = await supabase.auth.mfa.challenge({
+      const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({
         factorId
       })
+      if (challengeError) throw challengeError
       if (!challenge) throw new Error('Failed to create challenge')
 
-      const { data, error } = await supabase.auth.mfa.verify({
+      const { error: verifyError } = await supabase.auth.mfa.verify({
         factorId,
         challengeId: challenge.id,
         code: verificationCode
       })
-      if (error) throw error
+      if (verifyError) throw verifyError
 
       setVerified(true)
+      setSuccess('Two-factor authentication enabled successfully!')
       setMessage({ type: 'success', text: 'Two-factor authentication enabled successfully!' })
     } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to verify code. Please try again.' })
+      const authError = err as AuthError
+      setMessage({ type: 'error', text: authError.message || 'Failed to verify code. Please try again.' })
     }
   }
 

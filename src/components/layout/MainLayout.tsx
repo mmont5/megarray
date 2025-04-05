@@ -1,44 +1,29 @@
 'use client'
 
-import { useState, useEffect, ReactNode } from 'react'
-import Link from 'next/link'
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { Dialog } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { supabase } from '@/lib/supabase/client'
+import { useUser } from '@/lib/hooks/useUser'
 import Header from './Header'
 import Footer from './Footer'
 
-const navigation = [
-  { name: 'Features', href: '/#features' },
-  { name: 'Solutions', href: '/#solutions' },
-  { name: 'Pricing', href: '/#pricing' },
-  { name: 'About', href: '/#about' },
-  { name: 'Contact', href: '/#contact' },
-]
-
 interface MainLayoutProps {
-  children: ReactNode;
+  children: React.ReactNode
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [user, setUser] = useState<any>(null)
+  const { user, loading } = useUser()
   const pathname = usePathname()
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-    }
-    getUser()
-  }, [])
-
   return (
-    <div className="flex min-h-screen flex-col bg-gray-900">
-      <Header />
-      <main className="flex-grow pt-16">{children}</main>
-      <Footer />
+    <div className="min-h-screen bg-gray-100">
+      <div className="flex flex-col">
+        <Header user={user} loading={loading} onMenuToggle={setMobileMenuOpen} />
+        <main className="py-10">
+          <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+        </main>
+        <Footer />
+      </div>
     </div>
   )
 } 
