@@ -72,7 +72,7 @@ export default function AboutPage(): ReactElement {
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
               Our Mission
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-600">
               We&apos;re building the next generation of social media management tools, empowering businesses to connect with their audiences more effectively and authentically.
             </p>
           </div>
@@ -85,13 +85,13 @@ export default function AboutPage(): ReactElement {
           <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:gap-24">
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-white">Our Story</h2>
-              <p className="mt-6 text-lg leading-8 text-gray-300">
+              <p className="mt-6 text-lg leading-8 text-gray-600">
                 Megarray was founded in 2022 by Michael Chen and Sarah Johnson, who saw the need for more powerful, intelligent tools to manage social media presence across multiple platforms.
               </p>
-              <p className="mt-4 text-lg leading-8 text-gray-300">
+              <p className="mt-4 text-lg leading-8 text-gray-600">
                 After experiencing firsthand the challenges of managing social media campaigns at scale, they set out to build a platform that combines intuitive design with powerful AI capabilities.
               </p>
-              <p className="mt-4 text-lg leading-8 text-gray-300">
+              <p className="mt-4 text-lg leading-8 text-gray-600">
                 Today, Megarray serves thousands of customers worldwide, from small businesses to large enterprises, all looking to streamline their social media operations and drive better results.
               </p>
             </div>
@@ -113,7 +113,7 @@ export default function AboutPage(): ReactElement {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
             <h2 className="text-3xl font-bold tracking-tight text-white">Our Values</h2>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-600">
               These core principles guide everything we do, from product development to customer service.
             </p>
           </div>
@@ -127,7 +127,7 @@ export default function AboutPage(): ReactElement {
                     </div>
                     {value.name}
                   </dt>
-                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-300">
+                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
                     <p className="flex-auto">{value.description}</p>
                   </dd>
                 </div>
@@ -142,7 +142,7 @@ export default function AboutPage(): ReactElement {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
             <h2 className="text-3xl font-bold tracking-tight text-white">Our Team</h2>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-600">
               Meet the people behind Megarray who are passionate about building amazing tools for social media management.
             </p>
           </div>
@@ -162,7 +162,7 @@ export default function AboutPage(): ReactElement {
                 </div>
                 <h3 className="mt-6 text-xl font-semibold leading-8 tracking-tight text-white">{person.name}</h3>
                 <p className="text-base leading-7 text-indigo-400">{person.role}</p>
-                <p className="mt-4 text-base leading-7 text-gray-300">{person.bio}</p>
+                <p className="mt-4 text-base leading-7 text-gray-600">{person.bio}</p>
               </div>
             ))}
           </div>
@@ -176,7 +176,7 @@ export default function AboutPage(): ReactElement {
             <div className="grid grid-cols-1 gap-x-8 gap-y-12 lg:grid-cols-2 lg:gap-x-16">
               <div>
                 <h2 className="text-3xl font-bold tracking-tight text-white">Join our team</h2>
-                <p className="mt-6 text-lg leading-8 text-gray-300">
+                <p className="mt-6 text-lg leading-8 text-gray-600">
                   We&apos;re always looking for talented individuals to join our mission of transforming social media management. Check out our open positions and become part of our journey.
                 </p>
                 <div className="mt-10">

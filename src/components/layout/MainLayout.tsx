@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { usePathname } from 'next/navigation'
 import { useUser } from '@/lib/hooks/useUser'
 import Header from './Header'
 import Footer from './Footer'
@@ -13,7 +12,6 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { user, loading } = useUser()
-  const pathname = usePathname()
 
   return (
     <div className="min-h-screen bg-gray-100">

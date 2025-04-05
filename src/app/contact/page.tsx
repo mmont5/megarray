@@ -105,8 +105,8 @@ export default function ContactPage(): ReactElement {
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
               Contact Us
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
-              Have questions about Megarray? Need help with your account? We're here to help.
+            <p className="mt-2 text-lg leading-8 text-gray-600">
+              We&apos;d love to hear from you! Let us know how we can help.
             </p>
           </div>
         </div>
@@ -194,7 +194,9 @@ export default function ContactPage(): ReactElement {
                 {success ? (
                   <div className="bg-green-500/10 border border-green-500 rounded-lg p-6 text-center">
                     <h3 className="text-xl font-medium text-white mb-2">Thank you for your message!</h3>
-                    <p className="text-gray-300">We've received your inquiry and will get back to you as soon as possible.</p>
+                    <p className="mt-6 text-base text-gray-600">
+                      We&apos;ll get back to you within 24 hours.
+                    </p>
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
@@ -385,8 +387,8 @@ export default function ContactPage(): ReactElement {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tight text-white">Frequently Asked Questions</h2>
-            <p className="mt-4 text-lg text-gray-300">
-              Find quick answers to common questions about Megarray.
+            <p className="mt-4 text-sm text-gray-500">
+              We&apos;re here to help with any questions about our platform.
             </p>
           </div>
 
