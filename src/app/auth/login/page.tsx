@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
@@ -57,7 +57,12 @@ const socialProviders = [
   },
 ]
 
-export default function LoginPage() {
+interface LoginError {
+  message: string;
+  status?: number;
+}
+
+function LoginPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') || '/dashboard'
@@ -66,12 +71,12 @@ export default function LoginPage() {
     email: '',
     password: '',
   })
-  const [error, setError] = useState('')
+  const [error, setError] = useState<LoginError | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError('')
+    setError(null)
     setLoading(true)
 
     try {
@@ -85,8 +90,9 @@ export default function LoginPage() {
       if (data.user) {
         router.push(redirectTo)
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign in')
+    } catch (err: unknown) {
+      const error = err as LoginError;
+      setError(error);
     }
 
     setLoading(false)
@@ -103,7 +109,7 @@ export default function LoginPage() {
 
       if (error) throw error
     } catch (err: any) {
-      setError(err.message || `Failed to sign in with ${provider}`)
+      setError({ message: err.message || `Failed to sign in with ${provider}` })
     }
   }
 
@@ -201,7 +207,7 @@ export default function LoginPage() {
                     </svg>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                    <h3 className="text-sm font-medium text-red-800">{error.message}</h3>
                   </div>
                 </div>
               </div>
@@ -211,7 +217,9 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className={`flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                  loading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 {loading ? 'Signing in...' : 'Sign in'}
               </button>
@@ -228,15 +236,15 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="mt-6 grid grid-cols-3 gap-3">
               {socialProviders.map((provider) => (
                 <button
                   key={provider.provider}
                   onClick={() => handleSocialSignIn(provider.provider)}
-                  className="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-offset-2"
+                  className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50"
                 >
+                  <span className="sr-only">Sign in with {provider.name}</span>
                   {provider.icon}
-                  {provider.name}
                 </button>
               ))}
             </div>
@@ -244,5 +252,21 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+            Loading...
+          </h2>
+        </div>
+      </div>
+    }>
+      <LoginPageContent />
+    </Suspense>
   )
 } 

@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ContentType {
+  POST
+  STORY
+  REEL
+  VIDEO
+}
+
+enum SocialPlatform {
+  FACEBOOK
+  INSTAGRAM
+  TWITTER
+  LINKEDIN
+  TIKTOK
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  password          String
+  firstName         String
+  lastName          String
+  name              String?
+  role              UserRole  @default(USER)
+  verified          Boolean   @default(false)
+  verificationToken String?
+  resetPasswordToken String?
+  resetPasswordExpires DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  contents          Content[]
+}
+
+model Content {
+  id          String         @id @default(uuid())
+  type        ContentType
+  platform    SocialPlatform
+  text        String?
+  mediaUrl    String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  userId      String?
+  user        User?         @relation(fields: [userId], references: [id])
+} 

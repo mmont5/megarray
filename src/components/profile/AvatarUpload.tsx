@@ -33,7 +33,7 @@ export default function AvatarUpload({ userId, url, onUpload, size = 150 }: Avat
       const reader = new FileReader()
       reader.readAsDataURL(file)
       reader.onload = (event) => {
-        const img = new Image()
+        const img = document.createElement('img')
         img.src = event.target?.result as string
         img.onload = () => {
           // Calculate dimensions while maintaining aspect ratio

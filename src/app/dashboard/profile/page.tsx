@@ -5,10 +5,18 @@ import { supabase } from '@/lib/supabase/client'
 import AvatarUpload from '@/components/profile/AvatarUpload'
 import TwoFactorSetup from '@/components/profile/TwoFactorSetup'
 
+interface UserProfile {
+  id: string;
+  email: string;
+  full_name: string;
+  avatar_url: string;
+  // Add other profile fields as needed
+}
+
 export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -18,6 +26,7 @@ export default function ProfilePage() {
   })
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
   const [message, setMessage] = useState({ type: '', text: '' })
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const getProfile = async () => {
@@ -34,24 +43,25 @@ export default function ProfilePage() {
             .eq('id', user.id)
             .single()
             
-          if (error && error.code !== 'PGRST116') {
-            throw error
-          }
-          
-          if (data) {
-            setProfile(data)
-            setFormData({
-              firstName: data.first_name || '',
-              lastName: data.last_name || '',
-              username: data.username || '',
-              website: data.website || '',
-              bio: data.bio || ''
-            })
-            setAvatarUrl(data.avatar_url)
-          }
+            if (error && error.code !== 'PGRST116') {
+              throw error
+            }
+            
+            if (data) {
+              setProfile(data)
+              setFormData({
+                firstName: data.first_name || '',
+                lastName: data.last_name || '',
+                username: data.username || '',
+                website: data.website || '',
+                bio: data.bio || ''
+              })
+              setAvatarUrl(data.avatar_url)
+            }
         }
       } catch (error: any) {
         console.error('Error loading user data:', error.message)
+        setError('Failed to load profile')
       } finally {
         setLoading(false)
       }

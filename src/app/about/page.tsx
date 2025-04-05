@@ -73,7 +73,7 @@ export default function AboutPage(): ReactElement {
               Our Mission
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-300">
-              We're building the next generation of social media management tools, empowering businesses to connect with their audiences more effectively and authentically.
+              We&apos;re building the next generation of social media management tools, empowering businesses to connect with their audiences more effectively and authentically.
             </p>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function AboutPage(): ReactElement {
               <div>
                 <h2 className="text-3xl font-bold tracking-tight text-white">Join our team</h2>
                 <p className="mt-6 text-lg leading-8 text-gray-300">
-                  We're always looking for talented individuals to join our mission of transforming social media management. Check out our open positions and become part of our journey.
+                  We&apos;re always looking for talented individuals to join our mission of transforming social media management. Check out our open positions and become part of our journey.
                 </p>
                 <div className="mt-10">
                   <a

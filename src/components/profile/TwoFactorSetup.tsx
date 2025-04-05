@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
-import QRCode from 'qrcode.react'
+import { QRCodeSVG } from 'qrcode.react'
 
 export default function TwoFactorSetup() {
   const [step, setStep] = useState<'start' | 'qr' | 'verify'>('start')
@@ -12,17 +12,23 @@ export default function TwoFactorSetup() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
+  const [factorId, setFactorId] = useState('')
+  const [verified, setVerified] = useState(false)
+  const [message, setMessage] = useState({ type: 'success', text: '' })
 
   const startSetup = async () => {
     setLoading(true)
     setError('')
 
     try {
-      const { data, error } = await supabase.auth.mfa.enroll()
+      const { data, error } = await supabase.auth.mfa.enroll({
+        factorType: 'totp'
+      })
       if (error) throw error
 
-      setQrCode(data.qr_code)
-      setSecret(data.secret)
+      setQrCode(data.totp.qr_code)
+      setSecret(data.totp.secret)
+      setFactorId(data.id)
       setStep('qr')
     } catch (err: any) {
       setError(err.message || 'Failed to start 2FA setup')
@@ -31,29 +37,24 @@ export default function TwoFactorSetup() {
     }
   }
 
-  const verifyAndEnable = async () => {
-    setLoading(true)
-    setError('')
-
+  const verifyOTP = async () => {
     try {
-      const { error } = await supabase.auth.mfa.challenge({ 
-        factorId: secret,
-        code: verificationCode 
+      const { data: challenge } = await supabase.auth.mfa.challenge({
+        factorId
+      })
+      if (!challenge) throw new Error('Failed to create challenge')
+
+      const { data, error } = await supabase.auth.mfa.verify({
+        factorId,
+        challengeId: challenge.id,
+        code: verificationCode
       })
       if (error) throw error
 
-      const { error: verifyError } = await supabase.auth.mfa.verify({ 
-        factorId: secret,
-        code: verificationCode 
-      })
-      if (verifyError) throw verifyError
-
-      setSuccess('Two-factor authentication enabled successfully')
-      setStep('start')
-    } catch (err: any) {
-      setError(err.message || 'Failed to verify code')
-    } finally {
-      setLoading(false)
+      setVerified(true)
+      setMessage({ type: 'success', text: 'Two-factor authentication enabled successfully!' })
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Failed to verify code. Please try again.' })
     }
   }
 
@@ -85,7 +86,7 @@ export default function TwoFactorSetup() {
               1. Scan this QR code with your authenticator app (e.g., Google Authenticator, Authy)
             </p>
             <div className="inline-block p-4 bg-white border rounded-lg">
-              <QRCode value={qrCode} size={200} />
+              <QRCodeSVG value={qrCode} size={200} />
             </div>
           </div>
 
@@ -107,7 +108,7 @@ export default function TwoFactorSetup() {
 
           <div>
             <button
-              onClick={verifyAndEnable}
+              onClick={verifyOTP}
               disabled={loading || verificationCode.length !== 6}
               className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >

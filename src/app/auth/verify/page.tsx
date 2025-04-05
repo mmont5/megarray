@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 
-export default function VerifyPage() {
+function VerifyPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [verifying, setVerifying] = useState(true)
@@ -113,5 +113,18 @@ export default function VerifyPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
+    }>
+      <VerifyPageContent />
+    </Suspense>
   )
 } 
